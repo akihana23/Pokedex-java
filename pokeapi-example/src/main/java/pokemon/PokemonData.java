@@ -10,8 +10,8 @@ public class PokemonData implements Serializable {
     private int id;
     private String name;
     private String type;
-    private int height;
-    private int weight;
+    private double height; // Em metros
+    private double weight; // Em kg
     private String abilities;
     private String stats;
     private String description;
@@ -22,15 +22,13 @@ public class PokemonData implements Serializable {
     private List<String> evolutionaryChain;
     private String dateAdded;
 
-    // CONSTRUTOR SEM ARGUMENTOS (já existe)
     public PokemonData() {
         this.weaknesses = new ArrayList<>();
         this.resistances = new ArrayList<>();
         this.evolutionaryChain = new ArrayList<>();
     }
 
-    // CONSTRUTOR COMPLETO - ADICIONE ESTE CONSTRUTOR
-    public PokemonData(int id, String name, String type, int height, int weight,
+    public PokemonData(int id, String name, String type, double height, double weight,
                       String abilities, String stats, String description, String spriteUrl,
                       String habitat, List<String> weaknesses, List<String> resistances,
                       List<String> evolutionaryChain) {
@@ -50,7 +48,7 @@ public class PokemonData implements Serializable {
         this.dateAdded = java.time.LocalDateTime.now().toString();
     }
 
-    // Getters e Setters (mantenha os que você já tem)
+    // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -60,11 +58,11 @@ public class PokemonData implements Serializable {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public int getHeight() { return height; }
-    public void setHeight(int height) { this.height = height; }
+    public double getHeight() { return height; }
+    public void setHeight(double height) { this.height = height; }
 
-    public int getWeight() { return weight; }
-    public void setWeight(int weight) { this.weight = weight; }
+    public double getWeight() { return weight; }
+    public void setWeight(double weight) { this.weight = weight; }
 
     public String getAbilities() { return abilities; }
     public void setAbilities(String abilities) { this.abilities = abilities; }
@@ -95,7 +93,7 @@ public class PokemonData implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Pokémon #%d: %s | Tipo: %s | Altura: %d | Peso: %d", 
+        return String.format("Pokémon #%d: %s | Tipo: %s | Altura: %.2fm | Peso: %.2fkg", 
                 id, name, type, height, weight);
     }
 
@@ -109,7 +107,7 @@ public class PokemonData implements Serializable {
         sb.append(String.format("ID: %d\n", id));
         sb.append(String.format("Nome: %s\n", name));
         sb.append(String.format("Tipo: %s\n", type));
-        sb.append(String.format("Altura: %d dm | Peso: %d hg\n", height, weight));
+        sb.append(String.format("Altura: %.2f m | Peso: %.2f kg\n", height, weight));
         sb.append(String.format("Habitat: %s\n", habitat != null ? habitat : "Desconhecido"));
         sb.append(String.format("Habilidades: %s\n", abilities));
         sb.append(String.format("Stats: %s\n", stats));

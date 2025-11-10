@@ -13,7 +13,6 @@ import com.google.gson.JsonParser;
 
 public class PokemonAPIIntegration {
     
-    
     public static PokemonData getPokemonFromAPI(String searchTerm) {
         try {
             // Primeira chamada: dados básicos do Pokémon
@@ -26,10 +25,17 @@ public class PokemonAPIIntegration {
             
             int id = pokemonJson.get("id").getAsInt();
             String name = pokemonJson.get("name").getAsString();
-            int height = pokemonJson.get("height").getAsInt();
-            int weight = pokemonJson.get("weight").getAsInt();
-            String spriteUrl = pokemonJson.getAsJsonObject("sprites")
-                                        .get("front_default").getAsString();
+            
+            // CONVERSÃO PARA METROS E KG
+            int heightDecimeters = pokemonJson.get("height").getAsInt();
+            int weightHectograms = pokemonJson.get("weight").getAsInt();
+            double heightMeters = heightDecimeters / 10.0; // 1 dm = 0.1 m
+            double weightKg = weightHectograms / 10.0;     // 1 hg = 0.1 kg
+            
+            String spriteUrl = "";
+            if (!pokemonJson.getAsJsonObject("sprites").get("front_default").isJsonNull()) {
+                spriteUrl = pokemonJson.getAsJsonObject("sprites").get("front_default").getAsString();
+            }
             
             // Processar tipos
             JsonArray typesArray = pokemonJson.getAsJsonArray("types");
@@ -81,13 +87,13 @@ public class PokemonAPIIntegration {
                 name = name.substring(0, 1).toUpperCase() + name.substring(1);
             }
             
-            // Certifique-se que todos os parâmetros existem e estão com tipos corretos
+            // Criar PokemonData com unidades convertidas
             PokemonData pokemonData = new PokemonData(
                 id,
                 name, 
                 types.toString(), 
-                height, 
-                weight,
+                heightMeters,  // Em metros
+                weightKg,      // Em kg
                 abilities.toString(),
                 stats.toString(),
                 description,
@@ -105,7 +111,6 @@ public class PokemonAPIIntegration {
             return null;
         }
     }
-    
     
     private static JsonObject fetchJSONFromAPI(String urlString) {
         try {
@@ -138,7 +143,6 @@ public class PokemonAPIIntegration {
         }
     }
     
-    
     private static String getEnglishDescription(JsonObject speciesJson) {
         if (speciesJson == null) return "Descrição não disponível";
         
@@ -159,7 +163,6 @@ public class PokemonAPIIntegration {
         return "Descrição em inglês não encontrada";
     }
     
-    
     private static String getHabitat(JsonObject speciesJson) {
         if (speciesJson == null) return "Desconhecido";
         
@@ -172,7 +175,6 @@ public class PokemonAPIIntegration {
         }
         return "Desconhecido";
     }
-    
     
     private static List<String> getEvolutionaryChain(JsonObject speciesJson) {
         List<String> chain = new ArrayList<>();
@@ -190,7 +192,6 @@ public class PokemonAPIIntegration {
         }
         return chain;
     }
-    
     
     private static void extractEvolutionNames(JsonObject chain, List<String> names) {
         try {
@@ -210,7 +211,6 @@ public class PokemonAPIIntegration {
         }
     }
     
-   
     private static void addIfNotExists(List<String> list, String... items) {
         for (String item : items) {
             if (!list.contains(item)) {
@@ -218,7 +218,6 @@ public class PokemonAPIIntegration {
             }
         }
     }
-    
     
     private static List<String> getTypeWeaknesses(List<String> types) {
         List<String> weaknesses = new ArrayList<>();
@@ -280,7 +279,6 @@ public class PokemonAPIIntegration {
         }
         return weaknesses;
     }
-    
     
     private static List<String> getTypeResistances(List<String> types) {
         List<String> resistances = new ArrayList<>();
@@ -344,13 +342,11 @@ public class PokemonAPIIntegration {
         return resistances;
     }
     
-    
     public static void displayPokemonDetails(PokemonData pokemon) {
         if (pokemon != null) {
             System.out.println(pokemon.getDetailedInfo());
         }
     }
-    
     
     public static void displayPokemonSummary(PokemonData pokemon) {
         if (pokemon != null) {
@@ -358,7 +354,7 @@ public class PokemonAPIIntegration {
             System.out.println("ID: " + pokemon.getId());
             System.out.println("Nome: " + pokemon.getName());
             System.out.println("Tipo: " + pokemon.getType());
-            System.out.println("Altura: " + pokemon.getHeight() + " dm | Peso: " + pokemon.getWeight() + " hg");
+            System.out.println("Altura: " + pokemon.getHeight() + " m | Peso: " + pokemon.getWeight() + " kg");
             System.out.println("Habitat: " + (pokemon.getHabitat() != null ? pokemon.getHabitat() : "Desconhecido"));
             System.out.println("Descrição: " + 
                 (pokemon.getDescription().length() > 100 ? 
