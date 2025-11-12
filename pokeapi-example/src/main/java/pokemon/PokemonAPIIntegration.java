@@ -211,7 +211,7 @@ public class PokemonAPIIntegration {
         }
     }
     
-    private static void addIfNotExists(List<String> list, String... items) {
+    public static void addIfNotExists(List<String> list, String... items) {
         for (String item : items) {
             if (!list.contains(item)) {
                 list.add(item);
@@ -219,7 +219,7 @@ public class PokemonAPIIntegration {
         }
     }
     
-    private static List<String> getTypeWeaknesses(List<String> types) {
+    public static List<String> getTypeWeaknesses(List<String> types) {
         List<String> weaknesses = new ArrayList<>();
         // Mapeamento simplificado de fraquezas
         for (String type : types) {
@@ -280,7 +280,7 @@ public class PokemonAPIIntegration {
         return weaknesses;
     }
     
-    private static List<String> getTypeResistances(List<String> types) {
+    public static List<String> getTypeResistances(List<String> types) {
         List<String> resistances = new ArrayList<>();
         // Mapeamento simplificado de resistências
         for (String type : types) {

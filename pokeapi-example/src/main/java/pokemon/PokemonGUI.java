@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PokemonGUI extends JFrame {
@@ -78,8 +79,10 @@ public class PokemonGUI extends JFrame {
 
                     int option = JOptionPane.showConfirmDialog(panel, "Deseja salvar este Pokémon?", "Salvar", JOptionPane.YES_NO_OPTION);
                     if (option == JOptionPane.YES_OPTION) {
-                        crud.addPokemon(pokemon);
-                        JOptionPane.showMessageDialog(panel, "Pokémon salvo com sucesso!");
+                        boolean success = crud.addPokemon(pokemon, panel);
+                        if (success) {
+                            JOptionPane.showMessageDialog(panel, "Pokémon salvo com sucesso!");
+                        }
                     }
                 } else {
                     resultArea.setText("");
@@ -275,6 +278,11 @@ public class PokemonGUI extends JFrame {
                 String spriteUrl = spriteUrlField.getText();
                 String habitat = habitatField.getText();
 
+                // CALCULAR FRAQUEZAS E RESISTÊNCIAS AUTOMATICAMENTE
+                List<String> typesList = Arrays.asList(type.split(",\\s*"));
+                List<String> weaknesses = PokemonAPIIntegration.getTypeWeaknesses(typesList);
+                List<String> resistances = PokemonAPIIntegration.getTypeResistances(typesList);
+
                 // Encontrar o índice do Pokémon
                 int index = -1;
                 List<PokemonData> list = crud.getPokemonList();
@@ -286,10 +294,8 @@ public class PokemonGUI extends JFrame {
                 }
 
                 if (index != -1) {
-                    // Manter as listas originais
+                    // Manter a cadeia evolutiva original
                     PokemonData original = list.get(index);
-                    List<String> weaknesses = original.getWeaknesses();
-                    List<String> resistances = original.getResistances();
                     List<String> evolutionaryChain = original.getEvolutionaryChain();
                     String dateAdded = original.getDateAdded();
 
@@ -379,26 +385,30 @@ public class PokemonGUI extends JFrame {
                 String spriteUrl = spriteUrlField.getText();
                 String habitat = habitatField.getText();
 
-                List<String> weaknesses = new ArrayList<>();
-                List<String> resistances = new ArrayList<>();
+                // CALCULAR FRAQUEZAS E RESISTÊNCIAS AUTOMATICAMENTE
+                List<String> typesList = Arrays.asList(type.split(",\\s*"));
+                List<String> weaknesses = PokemonAPIIntegration.getTypeWeaknesses(typesList);
+                List<String> resistances = PokemonAPIIntegration.getTypeResistances(typesList);
                 List<String> evolutionaryChain = new ArrayList<>();
 
                 PokemonData pokemon = new PokemonData(id, name, type, height, weight, abilities, stats, description, spriteUrl, habitat, weaknesses, resistances, evolutionaryChain);
-                crud.addPokemon(pokemon);
+                
+                boolean success = crud.addPokemon(pokemon, panel);
+                if (success) {
+                    JOptionPane.showMessageDialog(panel, "Pokémon salvo com sucesso!");
 
-                JOptionPane.showMessageDialog(panel, "Pokémon salvo com sucesso!");
-
-                // Limpar campos
-                idField.setText("");
-                nameField.setText("");
-                typeField.setText("");
-                heightField.setText("");
-                weightField.setText("");
-                abilitiesField.setText("");
-                statsField.setText("");
-                descriptionField.setText("");
-                spriteUrlField.setText("");
-                habitatField.setText("");
+                    // Limpar campos
+                    idField.setText("");
+                    nameField.setText("");
+                    typeField.setText("");
+                    heightField.setText("");
+                    weightField.setText("");
+                    abilitiesField.setText("");
+                    statsField.setText("");
+                    descriptionField.setText("");
+                    spriteUrlField.setText("");
+                    habitatField.setText("");
+                }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(panel, "Erro nos dados informados! Verifique ID, Altura e Peso.", "Erro", JOptionPane.ERROR_MESSAGE);
             }

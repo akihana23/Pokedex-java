@@ -1,5 +1,6 @@
 package pokemon;
 
+import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 public class PokemonCRUD {
     private static final String FILE_NAME = "pokemon_database.csv";
@@ -21,26 +24,41 @@ public class PokemonCRUD {
         loadFromFile();
     }
 
-    // CREATE - Adicionar novo Pokémon
-    public void addPokemon(PokemonData pokemon) {
+    // CREATE - Adicionar novo Pokémon (versão para GUI)
+    public boolean addPokemon(PokemonData pokemon, Component parentComponent) {
         // Verificar se já existe um Pokémon com mesmo ID
         for (PokemonData existing : pokemonList) {
             if (existing.getId() == pokemon.getId()) {
-                System.out.print("Já existe um Pokémon com ID " + pokemon.getId() + ". Deseja substituir? (s/n): ");
-                String response = scanner.nextLine();
-                if (response.equalsIgnoreCase("s")) {
+                int option = JOptionPane.showConfirmDialog(
+                    parentComponent,
+                    "Já existe um Pokémon com ID " + pokemon.getId() + ". Deseja substituir?",
+                    "Confirmação de Substituição",
+                    JOptionPane.YES_NO_OPTION
+                );
+                
+                if (option == JOptionPane.YES_OPTION) {
                     pokemonList.remove(existing);
                     break;
                 } else {
-                    System.out.println("Operação cancelada.");
-                    return;
+                    JOptionPane.showMessageDialog(
+                        parentComponent,
+                        "Operação cancelada.",
+                        "Aviso",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                    return false;
                 }
             }
         }
         
         pokemonList.add(pokemon);
         saveToFile();
-        System.out.println("✅ Pokémon adicionado com sucesso!");
+        return true;
+    }
+
+    // Sobrecarga do método para manter compatibilidade
+    public void addPokemon(PokemonData pokemon) {
+        addPokemon(pokemon, null);
     }
 
     // READ - Listar todos os Pokémon
